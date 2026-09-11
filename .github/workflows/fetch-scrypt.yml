@@ -1,0 +1,28 @@
+name: scrypt-lab
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout scrypt
+        uses: actions/checkout@v4
+        with:
+          repository: Tarsnap/scrypt
+          path: scrypt
+      - name: Record revision and archive source
+        shell: bash
+        run: |
+          cd scrypt
+          git rev-parse HEAD | tee ../REVISION.txt
+          cd ..
+          tar -czf scrypt-source.tgz scrypt
+      - name: Upload source
+        uses: actions/upload-artifact@v4
+        with:
+          name: scrypt-source
+          path: |
+            scrypt-source.tgz
+            REVISION.txt
+          retention-days: 1
