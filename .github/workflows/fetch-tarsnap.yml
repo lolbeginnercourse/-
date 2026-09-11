@@ -1,0 +1,28 @@
+name: tarsnap-lab
+on:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tarsnap
+        uses: actions/checkout@v4
+        with:
+          repository: Tarsnap/tarsnap
+          path: tarsnap
+      - name: Record revision and archive source
+        shell: bash
+        run: |
+          cd tarsnap
+          git rev-parse HEAD | tee ../REVISION-TARSNAP.txt
+          cd ..
+          tar -czf tarsnap-source.tgz tarsnap
+      - name: Upload source
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarsnap-source
+          path: |
+            tarsnap-source.tgz
+            REVISION-TARSNAP.txt
+          retention-days: 1
