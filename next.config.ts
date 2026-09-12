@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next';
 import { withWorkflow } from 'workflow/next';
 
+const scriptSource = process.env.NODE_ENV === 'development'
+  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+  : "script-src 'self' 'unsafe-inline'";
+
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
@@ -16,7 +20,7 @@ const securityHeaders = [
       "img-src 'self' data: blob:",
       "font-src 'self'",
       "style-src 'self' 'unsafe-inline'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      scriptSource,
       "connect-src 'self'"
     ].join('; ')
   }
