@@ -111,7 +111,15 @@ export function OfficeApp() {
       const body = await response.json().catch(() => ({}));
       if (response.status === 401) return window.location.assign('/login');
       if (!response.ok) throw new Error(body.error || 'タスクを開始できませんでした。');
-      setTasks((current) => [{ taskId, runId: body.runId, employeeId: selectedEmployee, prompt: task, status: 'working', createdAt: new Date().toISOString() }, ...current].slice(0, MAX_VISIBLE_TASKS));
+      const nextTask: ClientTask = {
+        taskId,
+        runId: String(body.runId),
+        employeeId: selectedEmployee,
+        prompt: task,
+        status: 'working',
+        createdAt: new Date().toISOString()
+      };
+      setTasks((current) => [nextTask, ...current].slice(0, MAX_VISIBLE_TASKS));
       setPrompt('');
       setOpenTask(taskId);
       setView('tasks');
