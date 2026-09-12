@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        env:
+          OFFICE_ACCESS_KEY: ci-only-not-a-production-secret
+          DATABASE_URL: postgresql://user:password@localhost:5432/ci_placeholder
+          AI_GATEWAY_API_KEY: ci-placeholder
+        run: npm run build
