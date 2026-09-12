@@ -25,7 +25,7 @@ const calculate = tool({
   }
 });
 
-const limits = { maxOutputTokens: 6000, maxRetries: 2, timeout: { totalMs: 300_000, stepMs: 90_000 } } as const;
+const limits = { maxOutputTokens: 6000, maxRetries: 2, timeout: { totalMs: 300_000, stepMs: 90_000 } };
 
 export const researchAgent = new ToolLoopAgent({
   model, ...limits,
@@ -59,9 +59,7 @@ export const developerAgent = new ToolLoopAgent({
   stopWhen: stepCountIs(8)
 });
 
-type RunnableAgent = {
-  generate: (options: { prompt: string; abortSignal?: AbortSignal; providerOptions?: { gateway?: { tags?: string[]; zeroDataRetention?: boolean } } }) => PromiseLike<{ text: string }>;
-};
+type RunnableAgent = { generate: (options: any) => PromiseLike<{ text: string }> };
 
 const delegate = (description: string, agent: RunnableAgent) => tool({
   description,
@@ -89,7 +87,7 @@ export const chiefAgent = new ToolLoopAgent({
   stopWhen: stepCountIs(10)
 });
 
-export const agentMap = { chief: chiefAgent, research: researchAgent, writer: writerAgent, reviewer: reviewerAgent, analyst: analystAgent, developer: developerAgent } satisfies Record<EmployeeId, RunnableAgent>;
+export const agentMap = { chief: chiefAgent, research: researchAgent, writer: writerAgent, reviewer: reviewerAgent, analyst: analystAgent, developer: developerAgent } as Record<EmployeeId, RunnableAgent>;
 
 export async function runEmployee(employeeId: EmployeeId, task: string) {
   const result = await agentMap[employeeId].generate({
