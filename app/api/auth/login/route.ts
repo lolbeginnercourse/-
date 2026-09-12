@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { isSameOrigin, SESSION_COOKIE, sessionToken, verifyAccessKey } from '@/lib/auth';
+import { createSessionToken, isSameOrigin, SESSION_COOKIE, SESSION_TTL_SECONDS, verifyAccessKey } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,12 +12,12 @@ export async function POST(request: Request) {
   if (!verifyAccessKey(accessKey)) return Response.json({ error: 'アクセスキーが違います。' }, { status: 401 });
 
   const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE, sessionToken(), {
+  cookieStore.set(SESSION_COOKIE, createSessionToken(), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7
+    maxAge: SESSION_TTL_SECONDS
   });
   return Response.json({ ok: true }, { headers: { 'Cache-Control': 'no-store' } });
 }
